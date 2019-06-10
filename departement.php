@@ -1,53 +1,5 @@
 <?php
 
-public static function isSessionTokenMatch():bool{
-        $str1 = filter_input(INPUT_GET, "c", FILTER_SANITIZE_STRING);
-        $str2 = isset($_SESSION[self::SESSION_USER_TOKEN])?$_SESSION[self::SESSION_USER_TOKEN]:"";
-        
-        if(strlen($str1) != strlen($str2)) {
-            
-            return false;
-            
-        } else {
-            
-            $res = $str1 ^ $str2;
-            $ret = 0;
-            for($i = strlen($res) - 1; $i >= 0; $i--){
-                $ret |= ord($res[$i]);
-            }
-            
-            return !$ret;
-        }
-    }
-
-
-    
-    public static function deconnectUser($userId, $redirect = false){
-        if(!self::isSessionTokenMatch()){
-            throw new \Exception("Opération impossible");
-        }
-        
-        $userDataSource = new \DJOLUC\RegisterBundle\Model\Frontend\UserDataSource();
-        $authenticationEngineDataSource = new \DJOLUC\RegisterBundle\Model\Frontend\AuthenticationEngineDataSource();
-        $authenticationEngineDataSource->updateUserOnlineStatus($userId, FALSE);
-        
-        $_SESSION = array();
-        
-        if(\session_destroy()){
-            $userIdentifier = \filter_input(INPUT_COOKIE, self::COOKIE_USER_IDENTIFIER, FILTER_SANITIZE_STRING);
-            $userPass = \filter_input(INPUT_COOKIE, self::COOKIE_USER_PASS, FILTER_SANITIZE_STRING);
-        
-            if(!empty($userIdentifier)){
-                \setcookie(self::COOKIE_USER_IDENTIFIER, "", -1, "/");
-                \setcookie(self::COOKIE_USER_PASS, "", -1, "/");
-            }
-        }
-        
-        if($redirect){
-            \header('Location: /', true);
-        }
-    }
-
 array (
   0 => 
   array (
